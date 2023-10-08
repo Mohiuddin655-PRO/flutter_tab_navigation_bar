@@ -41,6 +41,19 @@ class _HomeState extends State<Home> {
     pageController = PageController(initialPage: selectedIndex);
   }
 
+  void _onTabChanged(int index) {
+    if (index != 2) {
+      setState(() {
+        selectedIndex = index;
+      });
+      pageController.animateToPage(
+        selectedIndex,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutQuad,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -49,6 +62,11 @@ class _HomeState extends State<Home> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          child: const Icon(Icons.add),
+        ),
         body: PageView(
           physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
@@ -87,37 +105,35 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        bottomNavigationBar: TabNavigationBar(
-          backgroundColor: navigationBarColor,
-          onItemSelected: (int index) {
-            setState(() {
-              selectedIndex = index;
-            });
-            pageController.animateToPage(
-              selectedIndex,
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeOutQuad,
-            );
-          },
-          selectedIndex: selectedIndex,
-          barItems: const [
-            TabNavigationItem(
-              activeIcon: Icons.favorite,
-              icon: Icons.favorite_outline,
-            ),
-            TabNavigationItem(
-              activeIcon: Icons.feed,
-              icon: Icons.feed_outlined,
-            ),
-            TabNavigationItem(
-              activeIcon: Icons.bookmark_rounded,
-              icon: Icons.bookmark_border_rounded,
-            ),
-            TabNavigationItem(
-              activeIcon: Icons.person,
-              icon: Icons.person_outline,
-            ),
-          ],
+        bottomNavigationBar: BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          child: TabNavigationBar(
+            indicatorHeight: 8,
+            bottomPadding: 12,
+            indicatorWidth: 8,
+            backgroundColor: Colors.transparent,
+            onItemSelected: _onTabChanged,
+            selectedIndex: selectedIndex,
+            items: const [
+              TabNavigationItem(
+                activeIcon: Icons.favorite,
+                icon: Icons.favorite_outline,
+              ),
+              TabNavigationItem(
+                activeIcon: Icons.feed,
+                icon: Icons.feed_outlined,
+              ),
+              TabNavigationItem(),
+              TabNavigationItem(
+                activeIcon: Icons.bookmark_rounded,
+                icon: Icons.bookmark_border_rounded,
+              ),
+              TabNavigationItem(
+                activeIcon: Icons.person,
+                icon: Icons.person_outline,
+              ),
+            ],
+          ),
         ),
       ),
     );

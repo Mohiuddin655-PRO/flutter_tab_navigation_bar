@@ -6,24 +6,35 @@ class TabNavigationBar extends StatefulWidget {
   final Color backgroundColor;
   final OnButtonPressCallback onItemSelected;
   final int selectedIndex;
-  final List<TabNavigationItem> barItems;
-  final Color waterDropColor;
-  final Color inactiveIconColor;
+  final List<TabNavigationItem> items;
+  final Color? primaryColor;
+  final Color? secondaryColor;
   final double iconSize;
   final double? bottomPadding;
+  final Duration animationDuration;
+  final Widget? indicator;
+  final double indicatorWidth;
+  final double indicatorHeight;
+  final Color? indicatorColor;
+  final double indicatorCornerRadius;
 
   const TabNavigationBar({
-    required this.barItems,
+    super.key,
+    required this.items,
     required this.selectedIndex,
     required this.onItemSelected,
     this.bottomPadding,
     this.backgroundColor = Colors.white,
-    this.waterDropColor = const Color(0xFF5B75F0),
+    this.primaryColor,
     this.iconSize = 28,
+    this.animationDuration = const Duration(milliseconds: 500),
     Color? inactiveIconColor,
-    Key? key,
-  })  : inactiveIconColor = inactiveIconColor ?? waterDropColor,
-        super(key: key);
+    this.indicator,
+    this.indicatorWidth = 32,
+    this.indicatorHeight = 4,
+    this.indicatorColor,
+    this.indicatorCornerRadius = 8,
+  }) : secondaryColor = inactiveIconColor ?? primaryColor;
 
   @override
   State<TabNavigationBar> createState() => _TabNavigationBarState();
@@ -40,7 +51,7 @@ class _TabNavigationBarState extends State<TabNavigationBar>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: widget.animationDuration,
     )..forward(from: 0.0);
   }
 
@@ -60,15 +71,14 @@ class _TabNavigationBarState extends State<TabNavigationBar>
   Widget build(BuildContext context) {
     final int selectedIndex = widget.selectedIndex;
     final Color backgroundColor = widget.backgroundColor;
-    final Color dropColor = widget.waterDropColor;
-    final List<TabNavigationItem> items = widget.barItems;
+    final Color primaryColor =
+        widget.primaryColor ?? Theme.of(context).colorScheme.primary;
+    final List<TabNavigationItem> items = widget.items;
     final double iconSize = widget.iconSize;
-    final Color inactiveIconColor = widget.inactiveIconColor;
     final double bottomPadding =
         widget.bottomPadding ?? MediaQuery.of(context).padding.bottom;
-    final double barHeight = 60 + bottomPadding;
     return Container(
-      height: barHeight,
+      height: 54 + bottomPadding,
       color: backgroundColor,
       child: Stack(
         children: <Widget>[
@@ -80,34 +90,36 @@ class _TabNavigationBarState extends State<TabNavigationBar>
                 children: items.map((item) {
                   final int index = items.indexOf(item);
                   return _TabNavigationButton(
+                    itemCount: items.length,
                     bottomPadding: bottomPadding,
-                    barHeight: barHeight,
+                    height: 54,
                     barColor: backgroundColor,
-                    inactiveColor: inactiveIconColor,
-                    color: dropColor,
+                    inactiveColor: widget.secondaryColor,
+                    color: primaryColor,
                     index: index,
                     iconSize: iconSize,
                     selectedIndex: selectedIndex.toInt(),
                     controller: _controller,
                     selectedIcon: item.activeIcon ?? item.icon,
                     unselectedIcon: item.icon,
-                    onPressed: () => _onTap(index),
+                    onPressed: item._isValidItem ? () => _onTap(index) : null,
                   );
                 }).toList(),
               );
             },
           ),
           Positioned(
-            bottom: 0,
+            bottom: bottomPadding,
             child: _TabNavigationIndicator(
               itemCount: items.length,
               controller: _controller,
               selectedIndex: selectedIndex,
               previousIndex: _previousIndex,
-              color: dropColor,
-              width: 32,
-              height: 4,
-              borderRadius: 50,
+              color: widget.indicatorColor ?? primaryColor,
+              width: widget.indicatorWidth,
+              height: widget.indicatorHeight,
+              borderRadius: widget.indicatorCornerRadius,
+              indicator: widget.indicator,
             ),
           )
         ],

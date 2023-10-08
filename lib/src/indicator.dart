@@ -9,6 +9,7 @@ class _TabNavigationIndicator extends StatelessWidget {
   final int previousIndex;
   final Color color;
   final int itemCount;
+  final Widget? indicator;
 
   const _TabNavigationIndicator({
     Key? key,
@@ -20,12 +21,22 @@ class _TabNavigationIndicator extends StatelessWidget {
     required this.width,
     required this.height,
     required this.borderRadius,
+    this.indicator,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double maxElementWidth = deviceWidth / itemCount;
+    final mIndicator = indicator ??
+        Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+        );
     return AnimatedBuilder(
       animation: controller,
       builder: (_, child) {
@@ -45,16 +56,7 @@ class _TabNavigationIndicator extends StatelessWidget {
         width: maxElementWidth,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: width,
-              height: height,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: BorderRadius.circular(borderRadius),
-              ),
-            ),
-          ],
+          children: [mIndicator],
         ),
       ),
     );
