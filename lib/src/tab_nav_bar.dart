@@ -12,7 +12,6 @@ class TabNavigationBar extends StatefulWidget {
   final OnButtonPressCallback onItemSelected;
   final int selectedIndex;
   final List<TabNavigationItem> items;
-  final double iconSize;
   final double? bottomPadding;
   final Duration animationDuration;
   final Widget? indicator;
@@ -26,8 +25,6 @@ class TabNavigationBar extends StatefulWidget {
   final TabNavigationTweenValue<Color>? tabBackground;
   final TabNavigationTweenValue<Color>? tabIconColor;
   final TabNavigationTweenValue<double>? tabIconSize;
-  final TabNavigationTweenValue<Color>? tabTextColor;
-  final TabNavigationTweenValue<double>? tabTextSize;
 
   const TabNavigationBar({
     super.key,
@@ -40,9 +37,7 @@ class TabNavigationBar extends StatefulWidget {
     required this.onItemSelected,
     this.bottomPadding,
     this.backgroundColor = Colors.white,
-    this.iconSize = 28,
     this.animationDuration = const Duration(milliseconds: 500),
-    Color? inactiveIconColor,
     this.indicator,
     this.indicatorWidth = 32,
     this.indicatorHeight = 4,
@@ -53,8 +48,6 @@ class TabNavigationBar extends StatefulWidget {
     this.tabBackground,
     this.tabIconColor,
     this.tabIconSize,
-    this.tabTextColor,
-    this.tabTextSize,
   });
 
   @override
@@ -147,14 +140,8 @@ class _TabNavigationBarState extends State<TabNavigationBar>
                         TabNavigationTweenValue(primary: mIIC, secondary: mAIC),
                     tabIconSize: widget.tabIconSize ??
                         TabNavigationTweenValue(primary: iconSize),
-                    tabLabel: item.label,
-                    tabTextColor: widget.tabTextColor ??
-                        TabNavigationTweenValue(primary: mIIC, secondary: mAIC),
-                    tabTextSize: widget.tabTextSize ??
-                        const TabNavigationTweenValue(primary: 12),
                     rippleColor: primary.withOpacity(0.1),
                     pressedColor: primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(32),
                     isSelected: selectedIndex == index,
                     width: width,
                     height: 60,
