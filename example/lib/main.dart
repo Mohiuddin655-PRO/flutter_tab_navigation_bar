@@ -38,20 +38,21 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    pageController = PageController(initialPage: selectedIndex);
+    pageController = PageController(
+      initialPage: selectedIndex,
+    );
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
   }
 
   void _onTabChanged(int index) {
-    if (index != 2) {
-      setState(() {
-        selectedIndex = index;
-      });
-      pageController.animateToPage(
-        selectedIndex,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeOutQuad,
-      );
-    }
+    setState(() {
+      selectedIndex = index;
+    });
   }
 
   @override
@@ -62,13 +63,7 @@ class _HomeState extends State<Home> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          child: const Icon(Icons.add),
-        ),
         body: PageView(
-          physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
           children: <Widget>[
             Container(
@@ -105,35 +100,37 @@ class _HomeState extends State<Home> {
             ),
           ],
         ),
-        bottomNavigationBar: BottomAppBar(
-          shape: const CircularNotchedRectangle(),
-          child: TabNavigationBar(
-            indicatorHeight: 8,
-            bottomPadding: 12,
-            indicatorWidth: 8,
-            backgroundColor: Colors.transparent,
-            onItemSelected: _onTabChanged,
-            selectedIndex: selectedIndex,
-            items: const [
-              TabNavigationItem(
-                activeIcon: Icons.favorite,
-                icon: Icons.favorite_outline,
-              ),
-              TabNavigationItem(
-                activeIcon: Icons.feed,
-                icon: Icons.feed_outlined,
-              ),
-              TabNavigationItem(),
-              TabNavigationItem(
-                activeIcon: Icons.bookmark_rounded,
-                icon: Icons.bookmark_border_rounded,
-              ),
-              TabNavigationItem(
-                activeIcon: Icons.person,
-                icon: Icons.person_outline,
-              ),
-            ],
-          ),
+        bottomNavigationBar: TabNavigationBar(
+          backgroundColor: Colors.white,
+          controller: pageController,
+          indicatorHeight: 8,
+          bottomPadding: 12,
+          indicatorWidth: 8,
+          onItemSelected: _onTabChanged,
+          selectedIndex: selectedIndex,
+          primaryColor: Colors.green,
+          items: const [
+            TabNavigationItem(
+              activeIcon: Icons.favorite,
+              icon: Icons.favorite_outline,
+              label: "Home",
+            ),
+            TabNavigationItem(
+              activeIcon: Icons.feed,
+              icon: Icons.feed_outlined,
+              label: "Public",
+            ),
+            TabNavigationItem(
+              activeIcon: Icons.bookmark_rounded,
+              icon: Icons.bookmark_border_rounded,
+              label: "Bookmark",
+            ),
+            TabNavigationItem(
+              activeIcon: Icons.person,
+              icon: Icons.person_outline,
+              label: "Profile",
+            ),
+          ],
         ),
       ),
     );

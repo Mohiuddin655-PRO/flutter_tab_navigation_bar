@@ -1,54 +1,91 @@
 part of '../tab_navigation_bar.dart';
 
 class _TabNavigationButton extends StatelessWidget {
-  final VoidCallback? onPressed;
-  final AnimationController controller;
-  final IconData? selectedIcon;
-  final IconData? unselectedIcon;
-  final int selectedIndex;
-  final int index;
-  final Color? color;
-  final double iconSize;
-  final Color? inactiveColor;
-  final Color? barColor;
-  final double bottomPadding;
+  final double width;
   final double height;
-  final int itemCount;
+  final Color? rippleColor;
+  final Color? pressedColor;
+  final BorderRadius? borderRadius;
+  final bool isSelected;
+  final TabNavigationTweenValue<IconData?> tabIcon;
+  final String tabLabel;
+  final VoidCallback? onClick;
+
+  /// Tab properties
+  final TabNavigationTweenValue<double> tabCornerRadius;
+  final TabNavigationTweenValue<Color?> tabBackground;
+  final TabNavigationTweenValue<Color?> tabIconColor;
+  final TabNavigationTweenValue<double?> tabIconSize;
+  final TabNavigationTweenValue<Color?> tabTextColor;
+  final TabNavigationTweenValue<double?> tabTextSize;
 
   const _TabNavigationButton({
-    required this.itemCount,
-    this.onPressed,
-    required this.controller,
-    required this.selectedIcon,
-    required this.unselectedIcon,
-    required this.index,
-    required this.selectedIndex,
-    required this.color,
-    required this.iconSize,
-    required this.inactiveColor,
-    required this.barColor,
-    required this.bottomPadding,
+    required this.isSelected,
+    required this.width,
     required this.height,
+    required this.tabIcon,
+    required this.tabLabel,
+    this.borderRadius,
+    this.onClick,
+    this.rippleColor,
+    this.pressedColor,
+    required this.tabCornerRadius,
+    required this.tabBackground,
+    required this.tabIconColor,
+    required this.tabIconSize,
+    required this.tabTextColor,
+    required this.tabTextSize,
   });
 
   @override
   Widget build(BuildContext context) {
-    final MediaQueryData mediaQueryData = MediaQuery.of(context);
-    final double deviceWidth = mediaQueryData.size.width;
-    final double maxElementWidth = deviceWidth / itemCount;
-    final isSelected = selectedIndex == index;
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: maxElementWidth,
-        height: height,
-        color: barColor,
-        child: Icon(
-          isSelected ? selectedIcon : unselectedIcon,
-          size: iconSize,
-          color: isSelected ? color : Colors.grey,
+    return Material(
+      color: tabBackground.detect(isSelected),
+      clipBehavior: Clip.antiAlias,
+      borderRadius: BorderRadius.circular(tabCornerRadius.detect(isSelected)),
+      child: InkWell(
+        onTap: onClick,
+        splashColor: rippleColor,
+        highlightColor: pressedColor,
+        child: SizedBox(
+          width: width,
+          height: height,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                tabIcon.detect(isSelected),
+                size: tabIconSize.detect(isSelected),
+                color: tabIconColor.detect(isSelected),
+              ),
+              if (tabLabel.isNotEmpty)
+                Text(
+                  tabLabel,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: tabTextSize.detect(isSelected),
+                    color: tabTextColor.detect(isSelected),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class TabNavigationTweenValue<T> {
+  final T primary;
+  final T secondary;
+
+  const TabNavigationTweenValue({
+    required this.primary,
+    T? secondary,
+  }) : secondary = secondary ?? primary;
+
+  T detect(bool isActive) => isActive ? secondary : primary;
 }

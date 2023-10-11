@@ -1,17 +1,18 @@
 part of '../tab_navigation_bar.dart';
 
+import 'package:flutter/material.dart';
+
 typedef OnButtonPressCallback = void Function(int index);
 
 class TabNavigationBar extends StatefulWidget {
   final PageController controller;
-  final Color? primaryColor;
-  final Color? activeColor;
-  final Color? inactiveColor;
   final double? width;
   final Color backgroundColor;
   final OnButtonPressCallback onItemSelected;
   final int selectedIndex;
   final List<TabNavigationItem> items;
+  final Color? primaryColor;
+  final Color? secondaryColor;
   final double iconSize;
   final double? bottomPadding;
   final Duration animationDuration;
@@ -21,25 +22,15 @@ class TabNavigationBar extends StatefulWidget {
   final Color? indicatorColor;
   final double indicatorCornerRadius;
 
-  /// Tab properties
-  final TabNavigationTweenValue<double>? tabCornerRadius;
-  final TabNavigationTweenValue<Color>? tabBackground;
-  final TabNavigationTweenValue<Color>? tabIconColor;
-  final TabNavigationTweenValue<double>? tabIconSize;
-  final TabNavigationTweenValue<Color>? tabTextColor;
-  final TabNavigationTweenValue<double>? tabTextSize;
-
   const TabNavigationBar({
     super.key,
     this.width,
-    this.primaryColor,
-    this.activeColor,
-    this.inactiveColor,
     required this.items,
     required this.selectedIndex,
     required this.onItemSelected,
     this.bottomPadding,
     this.backgroundColor = Colors.white,
+    this.primaryColor,
     this.iconSize = 28,
     this.animationDuration = const Duration(milliseconds: 500),
     Color? inactiveIconColor,
@@ -49,13 +40,7 @@ class TabNavigationBar extends StatefulWidget {
     this.indicatorColor,
     this.indicatorCornerRadius = 8,
     required this.controller,
-    this.tabCornerRadius,
-    this.tabBackground,
-    this.tabIconColor,
-    this.tabIconSize,
-    this.tabTextColor,
-    this.tabTextSize,
-  });
+  }) : secondaryColor = inactiveIconColor ?? primaryColor;
 
   @override
   State<TabNavigationBar> createState() => _TabNavigationBarState();
@@ -65,6 +50,10 @@ class _TabNavigationBarState extends State<TabNavigationBar>
     with TickerProviderStateMixin {
   late AnimationController _controller;
 
+  final GlobalKey _key = GlobalKey();
+
+  Size size = Size.zero;
+
   @override
   void initState() {
     super.initState();
@@ -73,6 +62,18 @@ class _TabNavigationBarState extends State<TabNavigationBar>
       duration: widget.animationDuration,
     )..forward(from: 0.0);
     widget.controller.addListener(_pageListener);
+    WidgetsBinding.instance.addPostFrameCallback(_onMeasureSize);
+  }
+
+  @override
+  void didUpdateWidget(covariant TabNavigationBar oldWidget) {
+    WidgetsBinding.instance.addPostFrameCallback(_onMeasureSize);
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _onMeasureSize(Duration duration) {
+    final rb = _key.currentContext?.findRenderObject() as RenderBox?;
+    setState(() => size = rb?.size ?? MediaQuery.sizeOf(context));
   }
 
   @override
@@ -105,75 +106,100 @@ class _TabNavigationBarState extends State<TabNavigationBar>
 
   @override
   Widget build(BuildContext context) {
-    final primary =
-        widget.primaryColor ?? Theme.of(context).colorScheme.primary;
-
-    final mAIC = widget.activeColor ?? primary;
-    final mIIC = widget.inactiveColor ?? primary.withOpacity(0.5);
-    final mIC = widget.indicatorColor ?? primary;
-
     final int selectedIndex = widget.selectedIndex;
     final Color backgroundColor = widget.backgroundColor;
-
+    final Color primaryColor =
+        widget.primaryColor ?? Theme.of(context).colorScheme.primary;
     final List<TabNavigationItem> items = widget.items;
     final double iconSize = widget.iconSize;
     final double bottomPadding =
         widget.bottomPadding ?? MediaQuery.of(context).padding.bottom;
 
-    return WidgetWrapper(
-      wrap: (context, size) {
-        var width = size.width / items.length;
+    ///
 
-        return Container(
-          width: widget.width,
-          height: 60 + bottomPadding,
-          color: backgroundColor,
-          child: Stack(
-            children: <Widget>[
-              Row(
+    final width = size.width / items.length;
+
+    return Container(
+      key: _key,
+      width: widget.width,
+      height: 54 + bottomPadding,
+      color: backgroundColor,
+      child: Stack(
+        children: <Widget>[
+          AnimatedBuilder(
+            animation: widget.controller,
+            builder: (_, __) {
+              return Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: items.map((item) {
                   final int index = items.indexOf(item);
                   return _TabNavigationButton(
-                    tabBackground: widget.tabBackground ??
-                        TabNavigationTweenValue(primary: backgroundColor),
-                    tabCornerRadius: widget.tabCornerRadius ??
-                        const TabNavigationTweenValue(primary: 25),
-                    tabIcon: TabNavigationTweenValue(
-                      primary: item.icon,
-                      secondary: item.activeIcon,
-                    ),
-                    tabIconColor: widget.tabIconColor ??
-                        TabNavigationTweenValue(primary: mIIC, secondary: mAIC),
-                    tabIconSize: widget.tabIconSize ??
-                        TabNavigationTweenValue(primary: iconSize),
-                    tabLabel: item.label,
-                    tabTextColor: widget.tabTextColor ??
-                        TabNavigationTweenValue(primary: mIIC, secondary: mAIC),
-                    tabTextSize: widget.tabTextSize ??
-                        const TabNavigationTweenValue(primary: 12),
-                    rippleColor: primary.withOpacity(0.1),
-                    pressedColor: primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(32),
-                    isSelected: selectedIndex == index,
                     width: width,
-                    height: 60,
+                    itemCount: items.length,
+                    bottomPadding: bottomPadding,
+                    height: 54,
+                    barColor: backgroundColor,
+                    inactiveColor: widget.secondaryColor,
+                    color: primaryColor,
+                    index: index,
+                    iconSize: iconSize,
+                    selectedIndex: selectedIndex.toInt(),
+                    activeIcon: item.activeIcon ?? item.tabIcon,
+                    tabIcon: item.tabIcon,
                     onClick: item._isValidItem ? () => _onTap(index) : null,
                   );
                 }).toList(),
-              ),
-              Positioned(
-                bottom: bottomPadding,
-                child: AnimatedIndicator(
-                  controller: widget.controller,
-                  type: TabNavigationIndicatorType.full,
-                  width: width,
-                  height: 4,
-                  color: mIC,
-                ),
-              )
-            ],
+              );
+            },
           ),
+          Positioned(
+            bottom: bottomPadding,
+            child: AnimatedIndicator(
+              width: width,
+              controller: widget.controller,
+              itemCount: items.length,
+            ),
+            // child: _TabNavigationIndicator(
+            //   itemCount: items.length,
+            //   controller: _controller,
+            //   selectedIndex: selectedIndex,
+            //   previousIndex: _previousIndex,
+            //   color: widget.indicatorColor ?? primaryColor,
+            //   width: widget.indicatorWidth,
+            //   height: widget.indicatorHeight,
+            //   borderRadius: widget.indicatorCornerRadius,
+            //   indicator: widget.indicator,
+            // ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class AnimatedIndicator extends StatelessWidget {
+  final double width;
+  final int itemCount;
+  final PageController controller;
+
+  const AnimatedIndicator({
+    super.key,
+    required this.width,
+    required this.itemCount,
+    required this.controller,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        final page = controller.page ?? 0.0;
+        return Container(
+          width: width,
+          height: 2,
+          margin: EdgeInsets.only(left: page * width),
+          color: Colors.blue,
         );
       },
     );

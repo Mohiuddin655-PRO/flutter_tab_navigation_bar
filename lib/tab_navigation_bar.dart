@@ -1,6 +1,7 @@
 library tab_navigation_bar;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_wrapper/flutter_widget_wrapper.dart';
 
 part 'src/button.dart';
 

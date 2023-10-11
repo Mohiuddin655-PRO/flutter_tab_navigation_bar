@@ -1,5 +1,56 @@
 part of '../tab_navigation_bar.dart';
 
+class AnimatedIndicator extends StatelessWidget {
+  final PageController controller;
+  final double width;
+  final double height;
+  final Color? color;
+  final double radius;
+  final TabNavigationIndicatorType type;
+
+  const AnimatedIndicator({
+    super.key,
+    required this.controller,
+    required this.width,
+    this.height = 2,
+    this.color,
+    this.type = TabNavigationIndicatorType.dot,
+    this.radius = 8,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: controller,
+      builder: (context, child) {
+        final page = controller.page ?? 0.0;
+        return Container(
+          width: width,
+          height: height,
+          decoration: BoxDecoration(
+            shape: type.isDot ? BoxShape.circle : BoxShape.rectangle,
+            borderRadius: !type.isDot ? BorderRadius.circular(radius) : null,
+            color: color ?? Theme.of(context).colorScheme.primary,
+          ),
+          margin: EdgeInsets.only(left: page * width),
+        );
+      },
+    );
+  }
+}
+
+enum TabNavigationIndicatorType {
+  dot,
+  full,
+  short;
+
+  bool get isDot => this == TabNavigationIndicatorType.dot;
+
+  bool get isFull => this == TabNavigationIndicatorType.full;
+
+  bool get isShort => this == TabNavigationIndicatorType.short;
+}
+
 class _TabNavigationIndicator extends StatelessWidget {
   final AnimationController controller;
   final double width;
