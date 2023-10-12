@@ -19,12 +19,14 @@ class TabNavigationBar extends StatefulWidget {
   final double indicatorHeight;
   final Color? indicatorColor;
   final double indicatorCornerRadius;
+  final EdgeInsets padding;
 
   /// Tab properties
-  final TabNavigationTweenValue<double>? tabCornerRadius;
-  final TabNavigationTweenValue<Color>? tabBackground;
-  final TabNavigationTweenValue<Color>? tabIconColor;
-  final TabNavigationTweenValue<double>? tabIconSize;
+  final double tabHeight;
+  final TabNavigationItemProperty<double>? tabCornerRadius;
+  final TabNavigationItemProperty<Color>? tabBackground;
+  final TabNavigationItemProperty<Color>? tabIconColor;
+  final TabNavigationItemProperty<double>? tabIconSize;
 
   const TabNavigationBar({
     super.key,
@@ -48,6 +50,8 @@ class TabNavigationBar extends StatefulWidget {
     this.tabBackground,
     this.tabIconColor,
     this.tabIconSize,
+    this.padding = const EdgeInsets.only(bottom: 8),
+    this.tabHeight = 60,
   });
 
   @override
@@ -109,9 +113,9 @@ class _TabNavigationBarState extends State<TabNavigationBar>
     final Color backgroundColor = widget.backgroundColor;
 
     final List<TabNavigationItem> items = widget.items;
-    final double iconSize = widget.iconSize;
-    final double bottomPadding =
-        widget.bottomPadding ?? MediaQuery.of(context).padding.bottom;
+
+    final paddingTop = widget.padding.top;
+    final paddingBottom = widget.padding.bottom;
 
     return WidgetWrapper(
       wrap: (context, size) {
@@ -119,8 +123,13 @@ class _TabNavigationBarState extends State<TabNavigationBar>
 
         return Container(
           width: widget.width,
-          height: 60 + bottomPadding,
+          height: widget.tabHeight + paddingTop + paddingBottom,
           color: backgroundColor,
+          padding: EdgeInsets.only(
+            top: paddingTop,
+            left: widget.padding.left,
+            right: widget.padding.right,
+          ),
           child: Stack(
             children: <Widget>[
               Row(
@@ -128,35 +137,32 @@ class _TabNavigationBarState extends State<TabNavigationBar>
                 children: items.map((item) {
                   final int index = items.indexOf(item);
                   return _TabNavigationButton(
+                    item: item,
                     tabBackground: widget.tabBackground ??
-                        TabNavigationTweenValue(primary: backgroundColor),
+                        TabNavigationItemProperty(primary: backgroundColor),
                     tabCornerRadius: widget.tabCornerRadius ??
-                        const TabNavigationTweenValue(primary: 25),
-                    tabIcon: TabNavigationTweenValue(
-                      primary: item.icon,
-                      secondary: item.activeIcon,
-                    ),
+                        const TabNavigationItemProperty(primary: 25),
                     tabIconColor: widget.tabIconColor ??
-                        TabNavigationTweenValue(primary: mIIC, secondary: mAIC),
+                        TabNavigationItemProperty(
+                            primary: mIIC, secondary: mAIC),
                     tabIconSize: widget.tabIconSize ??
-                        TabNavigationTweenValue(primary: iconSize),
+                        const TabNavigationItemProperty(primary: null),
                     rippleColor: primary.withOpacity(0.1),
                     pressedColor: primary.withOpacity(0.1),
                     isSelected: selectedIndex == index,
+                    controller: _controller,
                     width: width,
-                    height: 60,
+                    height: widget.tabHeight,
                     onClick: item._isValidItem ? () => _onTap(index) : null,
                   );
                 }).toList(),
               ),
               Positioned(
-                bottom: bottomPadding,
+                bottom: paddingBottom,
                 child: AnimatedIndicator(
                   controller: widget.controller,
-                  type: TabNavigationIndicatorType.full,
-                  width: width,
-                  height: 4,
-                  color: mIC,
+                  tabWidth: width,
+                  indicatorColor: mIC,
                 ),
               )
             ],
