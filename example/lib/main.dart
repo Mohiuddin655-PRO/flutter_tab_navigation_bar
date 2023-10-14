@@ -53,24 +53,9 @@ class _HomeState extends State<Home> {
   }
 
   void _onTabChanged(int index) {
-    if (index != 3) {
-      setState(() {
-        selectedIndex = index;
-      });
-    }
-  }
-
-  void _onProfileVisit(){
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          color: Colors.white,
-          width: double.infinity,
-          height: 300,
-        );
-      },
-    );
+    setState(() {
+      selectedIndex = index;
+    });
   }
 
   @override
@@ -121,76 +106,41 @@ class _HomeState extends State<Home> {
         bottomNavigationBar: TabNavigationBar(
           backgroundColor: Colors.white,
           controller: pageController,
-          indicatorHeight: 8,
-          padding: const EdgeInsets.only(bottom: 8, top: 0),
-          tabHeight: 60,
-          indicatorWidth: 8,
+          indicatorHeight: 2.5,
+          spaceBetween: 32,
+          indicatorWidth: 24,
           onItemSelected: _onTabChanged,
           selectedIndex: selectedIndex,
           primaryColor: Colors.green,
-          items: [
+          items: const [
             TabNavigationItem(
               activeIcon: Icons.favorite,
               icon: Icons.favorite_outline,
-              tabBackground: TabNavigationItemProperty(
-                primary: Colors.green.withOpacity(0.1),
-                secondary: Colors.green,
-              ),
-              tabCornerRadius: const TabNavigationItemProperty(primary: 25),
-              tabIconColor: const TabNavigationItemProperty(
-                primary: Colors.green,
-                secondary: Colors.white,
-              ),
             ),
             TabNavigationItem(
               activeIcon: Icons.feed,
               icon: Icons.feed_outlined,
-              tabBackground: TabNavigationItemProperty(
-                primary: Colors.green.withOpacity(0.1),
-                secondary: Colors.green,
-              ),
-              tabCornerRadius: const TabNavigationItemProperty(primary: 25),
-              tabIconColor: const TabNavigationItemProperty(
-                primary: Colors.green,
-                secondary: Colors.white,
-              ),
             ),
             TabNavigationItem(
               activeIcon: Icons.bookmark_rounded,
               icon: Icons.bookmark_border_rounded,
-              tabBackground: TabNavigationItemProperty(
-                primary: Colors.green.withOpacity(0.1),
-                secondary: Colors.green,
-              ),
-              tabCornerRadius: const TabNavigationItemProperty(primary: 25),
-              tabIconColor: const TabNavigationItemProperty(
-                primary: Colors.green,
-                secondary: Colors.white,
-              ),
             ),
             TabNavigationItem(
-              listener: false,
-              tabBuilder: (con, isSelected) {
-                return GestureDetector(
-                  onTap: _onProfileVisit,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        border: Border.all(
-                            width: 2.5,
-                            color: isSelected ? Colors.green : Colors.transparent,
-                            strokeAlign: BorderSide.strokeAlignOutside),
-                        borderRadius: BorderRadius.circular(32)),
-                    child: Image.network(
-                      _imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                );
-              },
+              activeIcon: Icons.add,
+              icon: Icons.add_a_photo,
+              // child: Container(
+              //   width: 40,
+              //   height: 40,
+              //   clipBehavior: Clip.antiAlias,
+              //   decoration: BoxDecoration(
+              //     color: Colors.grey.shade300,
+              //     shape: BoxShape.circle,
+              //   ),
+              //   child: Image.network(
+              //     _imageUrl,
+              //     fit: BoxFit.cover,
+              //   ),
+              // ),
             ),
           ],
         ),

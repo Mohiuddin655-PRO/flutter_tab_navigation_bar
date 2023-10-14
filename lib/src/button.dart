@@ -33,22 +33,19 @@ class _TabNavigationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mIsCustom = item.tab != null || item.tabBuilder != null;
-    final mTB = item.tabBackground ?? tabBackground;
-    final mTCR = item.tabCornerRadius ?? tabCornerRadius;
-    final mIS = item.tabIconSize ?? tabIconSize;
-    final mIC = item.tabIconColor ?? tabIconColor;
+    final mChild = item._tab(context, isSelected);
+    final mTB = tabBackground;
+    final mTCR = tabCornerRadius;
+    final mIS = tabIconSize;
+    final mIC = tabIconColor;
 
     Widget mTab;
 
-    if (mIsCustom) {
-      mTab = item._tab(context, isSelected) ?? const SizedBox();
-      if (item.listener) {
-        mTab = GestureDetector(
-          onTap: onClick,
-          child: AbsorbPointer(child: mTab),
-        );
-      }
+    if (mChild != null) {
+      mTab = GestureDetector(
+        onTap: onClick,
+        child: AbsorbPointer(child: mChild),
+      );
     } else {
       mTab = Material(
         color: mTB.detect(isSelected),

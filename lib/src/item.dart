@@ -2,35 +2,29 @@ part of '../tab_navigation_bar.dart';
 
 class TabNavigationItem {
   final IconData? icon, activeIcon;
-  final TabNavigationItemProperty<Color>? tabIconColor;
-  final TabNavigationItemProperty<double>? tabIconSize;
 
-  final TabNavigationItemProperty<double>? tabCornerRadius;
-  final TabNavigationItemProperty<Color>? tabBackground;
-
-  final Widget? tab;
-  final Widget Function(BuildContext context, bool isSelected)? tabBuilder;
+  final Widget? child;
+  final Widget Function(BuildContext context, bool selected)? builder;
 
   const TabNavigationItem({
     this.icon,
     this.activeIcon,
-    this.tab,
-    this.tabBackground,
-    this.tabBuilder,
-    this.tabCornerRadius,
-    this.tabIconColor,
-    this.tabIconSize,
+    this.child,
+    this.builder,
   });
 
   bool get _isValidItem {
     return icon != null ||
         activeIcon != null ||
-        tab != null ||
-        tabBuilder != null;
+        child != null ||
+        builder != null;
   }
 
   Widget? _tab(BuildContext context, bool selected) {
-    return tabBuilder?.call(context, selected) ?? tab;
+    if (builder != null) {
+      return builder!(context, selected);
+    }
+    return child;
   }
 
   IconData? _icon(bool selected) => selected ? activeIcon : icon;

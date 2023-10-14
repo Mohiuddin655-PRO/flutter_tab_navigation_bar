@@ -3,7 +3,7 @@ part of '../tab_navigation_bar.dart';
 typedef OnButtonPressCallback = void Function(int index);
 
 class TabNavigationBar extends StatefulWidget {
-  final PageController controller;
+  final PageController? controller;
   final Color? primaryColor;
   final Color? activeColor;
   final Color? inactiveColor;
@@ -18,8 +18,8 @@ class TabNavigationBar extends StatefulWidget {
   final double indicatorWidth;
   final double indicatorHeight;
   final Color? indicatorColor;
-  final double indicatorCornerRadius;
-  final EdgeInsets padding;
+  final double indicatorRadius;
+  final double spaceBetween;
 
   /// Tab properties
   final double tabHeight;
@@ -44,13 +44,13 @@ class TabNavigationBar extends StatefulWidget {
     this.indicatorWidth = 32,
     this.indicatorHeight = 4,
     this.indicatorColor,
-    this.indicatorCornerRadius = 8,
-    required this.controller,
+    this.indicatorRadius = 8,
+    this.controller,
     this.tabCornerRadius,
     this.tabBackground,
     this.tabIconColor,
     this.tabIconSize,
-    this.padding = const EdgeInsets.only(bottom: 8),
+    this.spaceBetween = 8,
     this.tabHeight = 60,
   });
 
@@ -60,39 +60,44 @@ class TabNavigationBar extends StatefulWidget {
 
 class _TabNavigationBarState extends State<TabNavigationBar>
     with TickerProviderStateMixin {
-  late AnimationController _controller;
+  late PageController? _controller;
+  late AnimationController _animation;
+
+  int _previousIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
+    _controller = widget.controller;
+    _animation = AnimationController(
       vsync: this,
       duration: widget.animationDuration,
     )..forward(from: 0.0);
-    widget.controller.addListener(_pageListener);
+    _controller?.addListener(_pageListener);
   }
 
   @override
   void dispose() {
-    widget.controller.removeListener(_pageListener);
-    _controller.dispose();
+    _controller?.removeListener(_pageListener);
+    _animation.dispose();
     super.dispose();
   }
 
   void _pageListener() {
     final int selectedIndex = widget.selectedIndex;
-    final int index = widget.controller.page?.round() ?? selectedIndex;
-    if (selectedIndex != index && !_controller.isAnimating) {
+    final int index = _controller?.page?.round() ?? selectedIndex;
+    if (selectedIndex != index && !_animation.isAnimating) {
       widget.onItemSelected(index);
-      _controller.forward(from: 0.0);
+      _animation.forward(from: 0.0);
     }
   }
 
   void _onTap(int index) {
     if (widget.selectedIndex != index) {
       widget.onItemSelected(index);
-      _controller.forward(from: 0.0);
-      widget.controller.animateToPage(
+      _animation.forward(from: 0.0);
+      _previousIndex = widget.selectedIndex;
+      _controller?.animateToPage(
         index,
         duration: widget.animationDuration,
         curve: Curves.easeInOut,
@@ -114,22 +119,14 @@ class _TabNavigationBarState extends State<TabNavigationBar>
 
     final List<TabNavigationItem> items = widget.items;
 
-    final paddingTop = widget.padding.top;
-    final paddingBottom = widget.padding.bottom;
-
     return WidgetWrapper(
       wrap: (context, size) {
         var width = size.width / items.length;
 
         return Container(
           width: widget.width,
-          height: widget.tabHeight + paddingTop + paddingBottom,
+          height: widget.tabHeight,
           color: backgroundColor,
-          padding: EdgeInsets.only(
-            top: paddingTop,
-            left: widget.padding.left,
-            right: widget.padding.right,
-          ),
           child: Stack(
             children: <Widget>[
               Row(
@@ -150,7 +147,7 @@ class _TabNavigationBarState extends State<TabNavigationBar>
                     rippleColor: primary.withOpacity(0.1),
                     pressedColor: primary.withOpacity(0.1),
                     isSelected: selectedIndex == index,
-                    controller: _controller,
+                    controller: _animation,
                     width: width,
                     height: widget.tabHeight,
                     onClick: item._isValidItem ? () => _onTap(index) : null,
@@ -158,11 +155,22 @@ class _TabNavigationBarState extends State<TabNavigationBar>
                 }).toList(),
               ),
               Positioned(
-                bottom: paddingBottom,
-                child: AnimatedIndicator(
-                  controller: widget.controller,
-                  tabWidth: width,
-                  indicatorColor: mIC,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  margin: EdgeInsets.only(top: widget.spaceBetween),
+                  child: AnimatedIndicator(
+                    animation: _animation,
+                    controller: _controller,
+                    currentIndex: widget.selectedIndex,
+                    previousIndex: _previousIndex,
+                    indicator: widget.indicator,
+                    indicatorColor: widget.indicatorColor ?? mIC,
+                    indicatorWidth: widget.indicatorWidth,
+                    indicatorHeight: widget.indicatorHeight,
+                    indicatorRadius: widget.indicatorRadius,
+                    tabWidth: width,
+                  ),
                 ),
               )
             ],
