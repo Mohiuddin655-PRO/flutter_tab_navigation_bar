@@ -1,24 +1,19 @@
 part of '../tab_navigation_bar.dart';
 
 class TabNavigationItem {
+  final bool useRoot;
   final IconData? icon, activeIcon;
 
   final Widget? child;
   final Widget Function(BuildContext context, bool selected)? builder;
 
   const TabNavigationItem({
+    this.useRoot = true,
     this.icon,
     this.activeIcon,
     this.child,
     this.builder,
   });
-
-  bool get _isValidItem {
-    return icon != null ||
-        activeIcon != null ||
-        child != null ||
-        builder != null;
-  }
 
   Widget? _tab(BuildContext context, bool selected) {
     if (builder != null) {

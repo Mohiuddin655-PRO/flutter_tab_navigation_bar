@@ -1,3 +1,6 @@
+## 1.0.4
+* Indicator custom style
+
 ## 1.0.2
 * Indicator padding bug fixed
 

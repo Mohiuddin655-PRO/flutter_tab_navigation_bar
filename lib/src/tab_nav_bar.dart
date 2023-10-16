@@ -19,7 +19,7 @@ class TabNavigationBar extends StatefulWidget {
   final double indicatorHeight;
   final Color? indicatorColor;
   final double indicatorRadius;
-  final double spaceBetween;
+  final IndicatorPosition indicatorPosition;
 
   /// Tab properties
   final double tabHeight;
@@ -45,12 +45,12 @@ class TabNavigationBar extends StatefulWidget {
     this.indicatorHeight = 4,
     this.indicatorColor,
     this.indicatorRadius = 8,
+    this.indicatorPosition = const IndicatorPositionBottom(32),
     this.controller,
     this.tabCornerRadius,
     this.tabBackground,
     this.tabIconColor,
     this.tabIconSize,
-    this.spaceBetween = 8,
     this.tabHeight = 60,
   });
 
@@ -86,9 +86,11 @@ class _TabNavigationBarState extends State<TabNavigationBar>
   void _pageListener() {
     final int selectedIndex = widget.selectedIndex;
     final int index = _controller?.page?.round() ?? selectedIndex;
-    if (selectedIndex != index && !_animation.isAnimating) {
-      widget.onItemSelected(index);
-      _animation.forward(from: 0.0);
+    if (widget.items[index].useRoot) {
+      if (selectedIndex != index && !_animation.isAnimating) {
+        widget.onItemSelected(index);
+        _animation.forward(from: 0.0);
+      }
     }
   }
 
@@ -119,6 +121,7 @@ class _TabNavigationBarState extends State<TabNavigationBar>
 
     final List<TabNavigationItem> items = widget.items;
 
+    final mIP = widget.indicatorPosition;
     return WidgetWrapper(
       wrap: (context, size) {
         var width = size.width / items.length;
@@ -131,34 +134,42 @@ class _TabNavigationBarState extends State<TabNavigationBar>
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: items.map((item) {
-                  final int index = items.indexOf(item);
-                  return _TabNavigationButton(
-                    item: item,
-                    tabBackground: widget.tabBackground ??
-                        TabNavigationItemProperty(primary: backgroundColor),
-                    tabCornerRadius: widget.tabCornerRadius ??
-                        const TabNavigationItemProperty(primary: 25),
-                    tabIconColor: widget.tabIconColor ??
-                        TabNavigationItemProperty(
-                            primary: mIIC, secondary: mAIC),
-                    tabIconSize: widget.tabIconSize ??
-                        const TabNavigationItemProperty(primary: null),
-                    rippleColor: primary.withOpacity(0.1),
-                    pressedColor: primary.withOpacity(0.1),
-                    isSelected: selectedIndex == index,
-                    controller: _animation,
-                    width: width,
-                    height: widget.tabHeight,
-                    onClick: item._isValidItem ? () => _onTap(index) : null,
-                  );
-                }).toList(),
+                children: List.generate(
+                  widget.items.length,
+                  (index) {
+                    final item = widget.items[index];
+                    return _TabNavigationButton(
+                      item: item,
+                      tabBackground: widget.tabBackground ??
+                          TabNavigationItemProperty(primary: backgroundColor),
+                      tabCornerRadius: widget.tabCornerRadius ??
+                          const TabNavigationItemProperty(primary: 25),
+                      tabIconColor: widget.tabIconColor ??
+                          TabNavigationItemProperty(
+                              primary: mIIC, secondary: mAIC),
+                      tabIconSize: widget.tabIconSize ??
+                          const TabNavigationItemProperty(primary: null),
+                      rippleColor: primary.withOpacity(0.1),
+                      pressedColor: primary.withOpacity(0.1),
+                      isSelected: selectedIndex == index,
+                      controller: _animation,
+                      width: width,
+                      height: widget.tabHeight,
+                      onClick: () => _onTap(index),
+                    );
+                  },
+                ),
               ),
               Positioned(
                 top: 0,
                 bottom: 0,
                 child: Container(
-                  margin: EdgeInsets.only(top: widget.spaceBetween),
+                  margin: EdgeInsets.only(
+                    top: mIP.isBottom ? mIP.value : 0,
+                    bottom: mIP.isTop ? mIP.value : 0,
+                    left: mIP.isStart ? mIP.value : 0,
+                    right: mIP.isEnd ? mIP.value : 0,
+                  ),
                   child: AnimatedIndicator(
                     animation: _animation,
                     controller: _controller,

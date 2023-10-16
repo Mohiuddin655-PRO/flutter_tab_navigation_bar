@@ -106,41 +106,68 @@ class _HomeState extends State<Home> {
         bottomNavigationBar: TabNavigationBar(
           backgroundColor: Colors.white,
           controller: pageController,
-          indicatorHeight: 2.5,
-          spaceBetween: 32,
-          indicatorWidth: 24,
+          indicatorPosition: IndicatorPosition.none(),
+          indicator: Container(
+            width: 35,
+            height: 35,
+            clipBehavior: Clip.antiAlias,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              shape: BoxShape.circle,
+            ),
+            child: Image.network(
+              _imageUrl,
+              fit: BoxFit.cover,
+            ),
+          ),
           onItemSelected: _onTabChanged,
           selectedIndex: selectedIndex,
           primaryColor: Colors.green,
-          items: const [
-            TabNavigationItem(
+          items: [
+            const TabNavigationItem(
               activeIcon: Icons.favorite,
               icon: Icons.favorite_outline,
             ),
-            TabNavigationItem(
+            const TabNavigationItem(
               activeIcon: Icons.feed,
               icon: Icons.feed_outlined,
             ),
-            TabNavigationItem(
+            const TabNavigationItem(
               activeIcon: Icons.bookmark_rounded,
               icon: Icons.bookmark_border_rounded,
             ),
             TabNavigationItem(
-              activeIcon: Icons.add,
-              icon: Icons.add_a_photo,
-              // child: Container(
-              //   width: 40,
-              //   height: 40,
-              //   clipBehavior: Clip.antiAlias,
-              //   decoration: BoxDecoration(
-              //     color: Colors.grey.shade300,
-              //     shape: BoxShape.circle,
-              //   ),
-              //   child: Image.network(
-              //     _imageUrl,
-              //     fit: BoxFit.cover,
-              //   ),
-              // ),
+              useRoot: true,
+
+              /// Use for parent observer to listen
+              builder: (context, selected) {
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 400),
+                  width: selected ? 40 : 32,
+                  height: selected ? 40 : 32,
+                  clipBehavior: Clip.antiAlias,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    border: Border.all(
+                      width: 2.5,
+                      color: selected ? Colors.green : Colors.transparent,
+                      strokeAlign: BorderSide.strokeAlignOutside,
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(2.5),
+                    clipBehavior: Clip.antiAlias,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: Image.network(
+                      _imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),

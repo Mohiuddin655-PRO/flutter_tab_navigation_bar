@@ -39,41 +39,42 @@ class _TabNavigationButton extends StatelessWidget {
     final mIS = tabIconSize;
     final mIC = tabIconColor;
 
-    Widget mTab;
-
-    if (mChild != null) {
-      mTab = GestureDetector(
-        onTap: onClick,
-        child: AbsorbPointer(child: mChild),
-      );
-    } else {
-      mTab = Material(
-        color: mTB.detect(isSelected),
-        clipBehavior: Clip.antiAlias,
-        borderRadius: BorderRadius.circular(mTCR.detect(isSelected)),
-        child: InkWell(
-          onTap: onClick,
-          splashColor: rippleColor,
-          highlightColor: pressedColor,
-          hoverColor: pressedColor,
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            child: Icon(
-              item._icon(isSelected),
-              color: mIC.detect(isSelected),
-              size: mIS.detect(isSelected),
-            ),
-          ),
-        ),
-      );
-    }
     return SizedBox(
       width: width,
       height: height,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [mTab],
+        children: [
+          if (mChild != null)
+            if (item.useRoot)
+              GestureDetector(
+                onTap: onClick,
+                child: AbsorbPointer(child: mChild),
+              )
+            else
+              mChild
+          else
+            Material(
+              color: mTB.detect(isSelected),
+              clipBehavior: Clip.antiAlias,
+              borderRadius: BorderRadius.circular(mTCR.detect(isSelected)),
+              child: InkWell(
+                onTap: item.useRoot ? onClick : null,
+                splashColor: rippleColor,
+                highlightColor: pressedColor,
+                hoverColor: pressedColor,
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(
+                    item._icon(isSelected),
+                    color: mIC.detect(isSelected),
+                    size: mIS.detect(isSelected),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
