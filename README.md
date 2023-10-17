@@ -1,6 +1,8 @@
 # flutter_tab_navigation_bar
 
-![Tab Navigation Bar Without Bottom App Bar](https://github.com/Mohiuddin655-PRO/flutter_tab_navigation_bar/assets/129824155/5c89162c-4f31-4736-8568-d53048019e8a)
-![Tab Navigation Bar with Bottom App Bar](https://github.com/Mohiuddin655-PRO/flutter_tab_navigation_bar/assets/129824155/4176bdbc-806d-4053-a853-864b10f19fcd)
+# Some custom indicator
+## ![profile](https://github.com/Mohiuddin655-PRO/flutter_tab_navigation_bar/assets/71176567/ab34dfcd-a24f-400b-86a2-6141eaebb0c7)
+## ![bottom](https://github.com/Mohiuddin655-PRO/flutter_tab_navigation_bar/assets/71176567/7cb498f3-da64-4085-a6dc-ac61af07461b)
+## ![circle_and_bottom](https://github.com/Mohiuddin655-PRO/flutter_tab_navigation_bar/assets/71176567/307abf6a-f915-499d-8b44-61f8413361b8)
+## ![two_line](https://github.com/Mohiuddin655-PRO/flutter_tab_navigation_bar/assets/71176567/473b89af-7564-4ffa-b9ad-83a42a8a8d7b)
 
-![ezgif com-video-to-gif](https://github.com/Mohiuddin655-PRO/flutter_tab_navigation_bar/assets/71176567/3aeb5447-0b28-4613-8a45-aa58870d7397)
