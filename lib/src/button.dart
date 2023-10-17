@@ -4,7 +4,6 @@ class _TabNavigationButton extends StatelessWidget {
   final AnimationController controller;
   final TabNavigationItem item;
   final double width;
-  final double? height;
   final Color? rippleColor;
   final Color? pressedColor;
   final bool isSelected;
@@ -21,7 +20,6 @@ class _TabNavigationButton extends StatelessWidget {
     required this.item,
     required this.isSelected,
     required this.width,
-    this.height,
     this.onClick,
     this.rippleColor,
     this.pressedColor,
@@ -41,7 +39,6 @@ class _TabNavigationButton extends StatelessWidget {
 
     return SizedBox(
       width: width,
-      height: height,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,

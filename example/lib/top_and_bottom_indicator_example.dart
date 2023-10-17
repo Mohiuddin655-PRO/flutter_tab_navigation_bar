@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tab_navigation_bar/tab_navigation_bar.dart';
 
-String _imageUrl =
-    "https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80";
-
 void main() {
   runApp(const MyApp());
 }
@@ -106,66 +103,61 @@ class _HomeState extends State<Home> {
         bottomNavigationBar: TabNavigationBar(
           backgroundColor: Colors.white,
           controller: pageController,
+          indicatorMode: IndicatorMode.back,
+          indicatorWidth: 1,
+          indicatorHeight: 60,
           indicatorPosition: const IndicatorPosition.center(),
-          indicatorMode: IndicatorMode.front,
-          indicator: Container(
-            width: 35,
-            height: 35,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              shape: BoxShape.circle,
-            ),
-            child: Image.network(
-              _imageUrl,
-              fit: BoxFit.cover,
-            ),
-          ),
           onItemSelected: _onTabChanged,
           selectedIndex: selectedIndex,
-          primaryColor: Colors.green,
-          items: [
-            const TabNavigationItem(
-              icon: Icons.favorite_outline,
+
+          /// Customize indicator as you like
+          indicator: SizedBox(
+            width: 8,
+            height: double.infinity,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                const Spacer(flex: 3),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const TabNavigationItem(
+          ),
+          primaryColor: Colors.green,
+          items: const [
+            TabNavigationItem(
+              activeIcon: Icons.home,
+              icon: Icons.home_outlined,
+            ),
+            TabNavigationItem(
+              activeIcon: Icons.feed,
               icon: Icons.feed_outlined,
             ),
-            const TabNavigationItem(
+            TabNavigationItem(
+              activeIcon: Icons.bookmark_rounded,
               icon: Icons.bookmark_border_rounded,
             ),
             TabNavigationItem(
-              useRoot: true,
-
-              /// Use for parent observer to listen
-              builder: (context, selected) {
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 400),
-                  width: selected ? 40 : 32,
-                  height: selected ? 40 : 32,
-                  clipBehavior: Clip.antiAlias,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    border: Border.all(
-                      width: 2.5,
-                      color: selected ? Colors.green : Colors.transparent,
-                      strokeAlign: BorderSide.strokeAlignOutside,
-                    ),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Container(
-                    margin: const EdgeInsets.all(2.5),
-                    clipBehavior: Clip.antiAlias,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: Image.network(
-                      _imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                );
-              },
+              activeIcon: Icons.notifications,
+              icon: Icons.notifications_outlined,
             ),
           ],
         ),

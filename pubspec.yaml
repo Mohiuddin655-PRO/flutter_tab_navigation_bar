@@ -1,6 +1,6 @@
 name: tab_navigation_bar
 description: Bottom navigation bar, it has unique indicator mode. When change current index then indicator move.
-version: 1.0.4
+version: 1.0.5
 repository: https://github.com/Mohiuddin655-PRO/flutter_tab_navigation_bar.git
 
 environment:

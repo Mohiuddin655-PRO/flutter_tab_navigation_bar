@@ -126,12 +126,15 @@ class _HomeState extends State<Home> {
           primaryColor: Colors.green,
           items: [
             const TabNavigationItem(
+              activeIcon: Icons.favorite,
               icon: Icons.favorite_outline,
             ),
             const TabNavigationItem(
+              activeIcon: Icons.feed,
               icon: Icons.feed_outlined,
             ),
             const TabNavigationItem(
+              activeIcon: Icons.bookmark_rounded,
               icon: Icons.bookmark_border_rounded,
             ),
             TabNavigationItem(

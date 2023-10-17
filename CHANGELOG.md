@@ -1,3 +1,6 @@
+## 1.0.5
+* Indicator back and front mode added
+
 ## 1.0.4
 * Indicator custom style
 

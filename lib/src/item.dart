@@ -22,5 +22,5 @@ class TabNavigationItem {
     return child;
   }
 
-  IconData? _icon(bool selected) => selected ? activeIcon : icon;
+  IconData? _icon(bool selected) => selected ? activeIcon ?? icon : icon;
 }
