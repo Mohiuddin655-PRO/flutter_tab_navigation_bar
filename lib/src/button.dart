@@ -1,7 +1,7 @@
 part of '../tab_navigation_bar.dart';
 
 class _TabNavigationButton extends StatelessWidget {
-  final AnimationController controller;
+  final TabNavigationController controller;
   final TabNavigationItem item;
   final double width;
   final Color? rippleColor;
@@ -12,8 +12,6 @@ class _TabNavigationButton extends StatelessWidget {
   /// Tab properties
   final TabNavigationItemProperty<double> tabCornerRadius;
   final TabNavigationItemProperty<Color?> tabBackground;
-  final TabNavigationItemProperty<Color?> tabIconColor;
-  final TabNavigationItemProperty<double?> tabIconSize;
 
   const _TabNavigationButton({
     required this.controller,
@@ -25,52 +23,33 @@ class _TabNavigationButton extends StatelessWidget {
     this.pressedColor,
     required this.tabCornerRadius,
     required this.tabBackground,
-    required this.tabIconColor,
-    required this.tabIconSize,
   });
 
   @override
   Widget build(BuildContext context) {
-    final mChild = item._tab(context, isSelected);
-    final mTB = tabBackground;
-    final mTCR = tabCornerRadius;
-    final mIS = tabIconSize;
-    final mIC = tabIconColor;
-
+    final mChild = item._tab(context, isSelected, 1);
     return SizedBox(
       width: width,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (mChild != null)
-            if (item.useRoot)
-              GestureDetector(
-                onTap: onClick,
-                child: AbsorbPointer(child: mChild),
-              )
-            else
-              mChild
-          else
-            Material(
-              color: mTB.detect(isSelected),
-              clipBehavior: Clip.antiAlias,
-              borderRadius: BorderRadius.circular(mTCR.detect(isSelected)),
-              child: InkWell(
-                onTap: item.useRoot ? onClick : null,
-                splashColor: rippleColor,
-                highlightColor: pressedColor,
-                hoverColor: pressedColor,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  child: Icon(
-                    item._icon(isSelected),
-                    color: mIC.detect(isSelected),
-                    size: mIS.detect(isSelected),
-                  ),
-                ),
-              ),
+          Material(
+            color: tabBackground.detect(isSelected),
+            clipBehavior: Clip.antiAlias,
+            borderRadius: BorderRadius.circular(
+              tabCornerRadius.detect(isSelected),
             ),
+            child: item.inkWell
+                ? InkWell(
+                    onTap: item.inkWell ? onClick : null,
+                    splashColor: item.rippleColor ?? rippleColor,
+                    highlightColor: item.pressedColor ?? pressedColor,
+                    hoverColor: item.pressedColor ?? pressedColor,
+                    child: AbsorbPointer(child: mChild),
+                  )
+                : mChild,
+          )
         ],
       ),
     );

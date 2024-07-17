@@ -5,44 +5,21 @@ import 'package:tab_navigation_bar/tab_navigation_bar.dart';
 String _imageUrl =
     "https://images.unsplash.com/photo-1529665253569-6d01c0eaf7b6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80";
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class AvatarIndicatorExample extends StatefulWidget {
+  const AvatarIndicatorExample({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      // debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        canvasColor: const Color.fromARGB(255, 232, 232, 232),
-      ),
-      home: const Home(),
-    );
-  }
+  State<AvatarIndicatorExample> createState() => _AvatarIndicatorExampleState();
 }
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> {
+class _AvatarIndicatorExampleState extends State<AvatarIndicatorExample> {
   final Color navigationBarColor = Colors.white;
-  int selectedIndex = 0;
-  late PageController pageController;
+  late TabNavigationController pageController;
 
   @override
   void initState() {
     super.initState();
-    pageController = PageController(
-      initialPage: selectedIndex,
+    pageController = TabNavigationController(
     );
   }
 
@@ -53,9 +30,7 @@ class _HomeState extends State<Home> {
   }
 
   void _onTabChanged(int index) {
-    setState(() {
-      selectedIndex = index;
-    });
+    print(index);
   }
 
   @override
@@ -96,7 +71,7 @@ class _HomeState extends State<Home> {
             Container(
               alignment: Alignment.center,
               child: const Icon(
-                Icons.bookmark,
+                Icons.notifications,
                 size: 56,
                 color: Colors.grey,
               ),
@@ -121,26 +96,32 @@ class _HomeState extends State<Home> {
               fit: BoxFit.cover,
             ),
           ),
-          onItemSelected: _onTabChanged,
-          selectedIndex: selectedIndex,
+          onChanged: _onTabChanged,
+          initialIndex: 0,
           primaryColor: Colors.green,
           items: [
-            const TabNavigationItem(
-              activeIcon: Icons.favorite,
-              icon: Icons.favorite_outline,
-            ),
-            const TabNavigationItem(
-              activeIcon: Icons.feed,
-              icon: Icons.feed_outlined,
-            ),
-            const TabNavigationItem(
-              activeIcon: Icons.bookmark_rounded,
-              icon: Icons.bookmark_border_rounded,
+            TabNavigationItem(
+              builder: (context, selected) {
+                return Icon(
+                  selected ? Icons.home : Icons.home_outlined,
+                );
+              },
             ),
             TabNavigationItem(
-              useRoot: true,
-
-              /// Use for parent observer to listen
+              builder: (context, selected) {
+                return Icon(
+                  selected ? Icons.feed : Icons.feed_outlined,
+                );
+              },
+            ),
+            TabNavigationItem(
+              builder: (context, selected) {
+                return Icon(
+                  selected ? Icons.bookmark : Icons.bookmark_outline,
+                );
+              },
+            ),
+            TabNavigationItem(
               builder: (context, selected) {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 400),
