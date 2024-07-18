@@ -14,6 +14,7 @@ class TabNavigationController {
   late AnimationController? _animation;
   late Duration _animationDuration;
   late VoidCallback _notifier;
+  late Curve? _pageAnimation;
 
   // INNER
   int _previousIndex = 0;
@@ -27,8 +28,10 @@ class TabNavigationController {
     required int selectedIndex,
     required AnimationController? animation,
     required Duration animationDuration,
+    required Curve? pageAnimation,
     required VoidCallback notifier,
   }) {
+    _pageAnimation = pageAnimation;
     _pageController = pageController;
     _animation = animation?..forward(from: 0.0);
     _items = items;
@@ -52,28 +55,35 @@ class TabNavigationController {
     _pageController?.removeListener(_pageListener);
   }
 
+  bool isClicked = false;
+
   void _pageListener() {
     final index = _pageController?.page?.round() ?? _selectedIndex;
-    if (_items[index].inkWell && _selectedIndex != index) {
+    if (_selectedIndex != index) {
+      _previousIndex = _selectedIndex;
       _selectedIndex = index;
       _notifier();
-      if (_pageController == null) _animation?.forward(from: 0.0);
       _onChanged?.call(index);
     }
   }
 
   void changeIndex(int index) {
-    if (_selectedIndex != index) {
-      _onChanged?.call(index);
-      if (_pageController == null) _animation?.forward(from: 0.0);
+    if (_pageController != null) {
+      if (_pageAnimation != null) {
+        _pageController?.animateToPage(
+          index,
+          duration: _animationDuration,
+          curve: _pageAnimation!,
+        );
+      } else {
+        _pageController?.jumpToPage(index);
+      }
+    } else if (_selectedIndex != index) {
       _previousIndex = _selectedIndex;
       _selectedIndex = index;
-      _pageController?.animateToPage(
-        index,
-        duration: _animationDuration,
-        curve: Curves.easeInOut,
-      );
+      _animation?.forward(from: 0.0);
       _notifier();
+      _onChanged?.call(index);
     }
   }
 }

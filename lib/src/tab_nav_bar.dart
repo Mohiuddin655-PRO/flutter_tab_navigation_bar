@@ -22,6 +22,8 @@ class TabNavigationBar extends StatefulWidget {
   final double indicatorRadius;
   final IndicatorMode indicatorMode;
   final IndicatorPosition indicatorPosition;
+  final bool hideIndicator;
+  final Curve? tabSelectionAnimation;
 
   /// Tab properties
   final TabNavigationItemProperty<double>? tabCornerRadius;
@@ -49,9 +51,11 @@ class TabNavigationBar extends StatefulWidget {
     this.indicatorRadius = 8,
     this.indicatorPosition = const IndicatorPosition.centerToFloat(),
     this.indicatorMode = IndicatorMode.back,
+    this.hideIndicator = false,
     this.controller,
     this.tabCornerRadius,
     this.tabBackground,
+    this.tabSelectionAnimation,
   });
 
   @override
@@ -78,6 +82,7 @@ class _TabNavigationBarState extends State<TabNavigationBar>
         onChanged: widget.onChanged,
         selectedIndex: widget.initialIndex,
         animationDuration: widget.animationDuration,
+        pageAnimation: widget.tabSelectionAnimation,
         notifier: () => setState(() {}),
       );
   }
@@ -101,32 +106,34 @@ class _TabNavigationBarState extends State<TabNavigationBar>
     return LayoutBuilder(
       builder: (context, size) {
         var width = size.maxWidth / controller._items.length;
-        final mIndicator = Positioned(
-          top: 0,
-          bottom: 0,
-          child: Container(
-            margin: mIP._current(mHeight, widget.indicatorHeight),
-            child: AnimatedIndicator(
-              controller: controller._pageController,
-              animation: controller._animation,
-              currentIndex: controller._selectedIndex,
-              previousIndex: controller._previousIndex,
-              indicator: widget.indicator,
-              indicatorColor: widget.indicatorColor ?? mIC,
-              indicatorWidth: widget.indicatorWidth,
-              indicatorHeight: widget.indicatorHeight,
-              indicatorRadius: widget.indicatorRadius,
-              tabWidth: width,
-            ),
-          ),
-        );
+        final mIndicator = widget.hideIndicator
+            ? null
+            : Positioned(
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  margin: mIP._current(mHeight, widget.indicatorHeight),
+                  child: AnimatedIndicator(
+                    controller: controller._pageController,
+                    animation: controller._animation,
+                    currentIndex: controller._selectedIndex,
+                    previousIndex: controller._previousIndex,
+                    indicator: widget.indicator,
+                    indicatorColor: widget.indicatorColor ?? mIC,
+                    indicatorWidth: widget.indicatorWidth,
+                    indicatorHeight: widget.indicatorHeight,
+                    indicatorRadius: widget.indicatorRadius,
+                    tabWidth: width,
+                  ),
+                ),
+              );
         return Container(
           width: widget.width,
           height: mHeight,
           color: backgroundColor,
           child: Stack(
             children: <Widget>[
-              if (widget.indicatorMode.isBack) mIndicator,
+              if (widget.indicatorMode.isBack && mIndicator != null) mIndicator,
               SizedBox(
                 width: double.infinity,
                 height: mHeight,
@@ -154,7 +161,8 @@ class _TabNavigationBarState extends State<TabNavigationBar>
                   ),
                 ),
               ),
-              if (widget.indicatorMode.isFront) mIndicator,
+              if (widget.indicatorMode.isFront && mIndicator != null)
+                mIndicator,
             ],
           ),
         );

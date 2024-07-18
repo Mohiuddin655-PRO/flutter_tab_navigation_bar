@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Tab selection animation added
+
 ## 1.0.7
 
 * Tab and gesture mode support
