@@ -1,3 +1,7 @@
+## 1.0.7
+
+* Tab and gesture mode support
+
 ## 1.0.6
 
 * Customization tab item support
