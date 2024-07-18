@@ -1,3 +1,4 @@
+import 'package:example/bottom_indicator_example.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tab_navigation_bar/tab_navigation_bar.dart';
@@ -12,25 +13,27 @@ class AvatarIndicatorExample extends StatefulWidget {
   State<AvatarIndicatorExample> createState() => _AvatarIndicatorExampleState();
 }
 
-class _AvatarIndicatorExampleState extends State<AvatarIndicatorExample> {
+class _AvatarIndicatorExampleState extends State<AvatarIndicatorExample>
+    with SingleTickerProviderStateMixin {
   final Color navigationBarColor = Colors.white;
-  late TabNavigationController pageController;
+  late TabNavigationController controller;
+  final index = ValueNotifier(0);
 
   @override
   void initState() {
     super.initState();
-    pageController = TabNavigationController(
-    );
+    controller = TabNavigationController();
   }
 
   @override
   void dispose() {
-    pageController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
   void _onTabChanged(int index) {
     print(index);
+    this.index.value = index;
   }
 
   @override
@@ -41,46 +44,53 @@ class _AvatarIndicatorExampleState extends State<AvatarIndicatorExample> {
         systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: Scaffold(
-        body: PageView(
-          controller: pageController,
-          children: <Widget>[
-            Container(
-              alignment: Alignment.center,
-              child: const Icon(
-                Icons.favorite,
-                size: 56,
-                color: Colors.grey,
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: const Icon(
-                Icons.feed,
-                size: 56,
-                color: Colors.grey,
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: const Icon(
-                Icons.bookmark,
-                size: 56,
-                color: Colors.grey,
-              ),
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: const Icon(
-                Icons.notifications,
-                size: 56,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
+        body: ValueListenableBuilder(
+            valueListenable: index,
+            builder: (context, value, child) {
+              return IndexedStack(
+                index: value,
+                // physics: NeverScrollableScrollPhysics(),
+                // controller: pageController,
+                children: <Widget>[
+                  BottomIndicatorExample(),
+                  // Container(
+                  //   alignment: Alignment.center,
+                  //   child: const Icon(
+                  //     Icons.favorite,
+                  //     size: 56,
+                  //     color: Colors.grey,
+                  //   ),
+                  // ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.feed,
+                      size: 56,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.bookmark,
+                      size: 56,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.notifications,
+                      size: 56,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              );
+            }),
         bottomNavigationBar: TabNavigationBar(
           backgroundColor: Colors.white,
-          controller: pageController,
+          controller: controller,
           indicatorPosition: const IndicatorPosition.center(),
           indicatorMode: IndicatorMode.front,
           indicator: Container(
@@ -99,25 +109,39 @@ class _AvatarIndicatorExampleState extends State<AvatarIndicatorExample> {
           onChanged: _onTabChanged,
           initialIndex: 0,
           primaryColor: Colors.green,
+          tabCornerRadius: TabNavigationItemProperty.all(100),
+          tabBackground: TabNavigationItemProperty(
+            selected: Colors.green,
+            unselected: Colors.green.shade50,
+          ),
           items: [
             TabNavigationItem(
               builder: (context, selected) {
-                return Icon(
-                  selected ? Icons.home : Icons.home_outlined,
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    selected ? Icons.home : Icons.home_outlined,
+                  ),
                 );
               },
             ),
             TabNavigationItem(
               builder: (context, selected) {
-                return Icon(
-                  selected ? Icons.feed : Icons.feed_outlined,
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    selected ? Icons.feed : Icons.feed_outlined,
+                  ),
                 );
               },
             ),
             TabNavigationItem(
               builder: (context, selected) {
-                return Icon(
-                  selected ? Icons.bookmark : Icons.bookmark_outline,
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(
+                    selected ? Icons.bookmark : Icons.bookmark_outline,
+                  ),
                 );
               },
             ),
@@ -133,7 +157,7 @@ class _AvatarIndicatorExampleState extends State<AvatarIndicatorExample> {
                     border: Border.all(
                       width: 2.5,
                       color: selected ? Colors.green : Colors.transparent,
-                      strokeAlign: BorderSide.strokeAlignOutside,
+                      strokeAlign: BorderSide.strokeAlignInside,
                     ),
                     shape: BoxShape.circle,
                   ),

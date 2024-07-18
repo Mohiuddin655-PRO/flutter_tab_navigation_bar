@@ -1,6 +1,7 @@
 part of '../tab_navigation_bar.dart';
 
 class AnimatedIndicator extends StatelessWidget {
+  final AnimationController? animation;
   final PageController? controller;
   final int previousIndex;
   final int currentIndex;
@@ -13,6 +14,7 @@ class AnimatedIndicator extends StatelessWidget {
 
   const AnimatedIndicator({
     super.key,
+    required this.animation,
     required this.controller,
     required this.tabWidth,
     required this.currentIndex,
@@ -41,16 +43,35 @@ class AnimatedIndicator extends StatelessWidget {
             ),
       ],
     );
-    return AnimatedBuilder(
-      animation: controller!,
-      builder: (context, child) {
-        final page = controller!.page??0;
-        return Container(
+    if (controller != null) {
+      return AnimatedBuilder(
+        animation: controller!,
+        builder: (context, child) {
+          final page = controller!.page ?? 0;
+          return Container(
+            width: tabWidth,
+            margin: EdgeInsets.only(left: page * tabWidth),
+            child: mIndicator,
+          );
+        },
+      );
+    } else {
+      return AnimatedBuilder(
+        animation: animation!,
+        builder: (_, child) {
+          return Transform.translate(
+            offset: Tween(
+              begin: Offset(previousIndex * tabWidth, 0),
+              end: Offset(currentIndex * tabWidth, 0),
+            ).animate(animation!).value,
+            child: child,
+          );
+        },
+        child: SizedBox(
           width: tabWidth,
-          margin: EdgeInsets.only(left: page * tabWidth),
           child: mIndicator,
-        );
-      },
-    );
+        ),
+      );
+    }
   }
 }

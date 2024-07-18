@@ -10,8 +10,8 @@ class _TabNavigationButton extends StatelessWidget {
   final VoidCallback? onClick;
 
   /// Tab properties
-  final TabNavigationItemProperty<double> tabCornerRadius;
-  final TabNavigationItemProperty<Color?> tabBackground;
+  final TabNavigationItemProperty<double>? tabCornerRadius;
+  final TabNavigationItemProperty<Color?>? tabBackground;
 
   const _TabNavigationButton({
     required this.controller,
@@ -21,8 +21,8 @@ class _TabNavigationButton extends StatelessWidget {
     this.onClick,
     this.rippleColor,
     this.pressedColor,
-    required this.tabCornerRadius,
-    required this.tabBackground,
+    this.tabCornerRadius,
+    this.tabBackground,
   });
 
   @override
@@ -35,11 +35,11 @@ class _TabNavigationButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Material(
-            color: tabBackground.detect(isSelected),
+            color: tabBackground?.detect(isSelected) ?? Colors.transparent,
             clipBehavior: Clip.antiAlias,
-            borderRadius: BorderRadius.circular(
-              tabCornerRadius.detect(isSelected),
-            ),
+            borderRadius: tabCornerRadius != null
+                ? BorderRadius.circular(tabCornerRadius!.detect(isSelected))
+                : null,
             child: item.inkWell
                 ? InkWell(
                     onTap: item.inkWell ? onClick : null,
@@ -57,15 +57,18 @@ class _TabNavigationButton extends StatelessWidget {
 }
 
 class TabNavigationItemProperty<T> {
-  final T primary;
-  final T secondary;
+  final T selected;
+  final T unselected;
 
   const TabNavigationItemProperty({
-    required this.primary,
-    T? secondary,
-  }) : secondary = secondary ?? primary;
+    required this.selected,
+    required this.unselected,
+  });
 
-  bool get isValid => secondary != null;
+  const TabNavigationItemProperty.all(T value)
+      : this(selected: value, unselected: value);
 
-  T detect(bool isActive) => isActive ? secondary : primary;
+  bool get isValid => selected != null;
+
+  T detect(bool isActive) => isActive ? selected : unselected;
 }

@@ -1,7 +1,9 @@
 part of '../tab_navigation_bar.dart';
 
 class TabNavigationBar extends StatefulWidget {
-  final TabNavigationController controller;
+  final TabNavigationController? controller;
+  final PageController? pageController;
+  final bool autoDisposeMode;
   final Color? primaryColor;
   final Color? rippleColor;
   final Color? pressedColor;
@@ -27,6 +29,8 @@ class TabNavigationBar extends StatefulWidget {
 
   const TabNavigationBar({
     super.key,
+    this.pageController,
+    this.autoDisposeMode = false,
     this.width,
     this.height = 54,
     this.primaryColor,
@@ -45,7 +49,7 @@ class TabNavigationBar extends StatefulWidget {
     this.indicatorRadius = 8,
     this.indicatorPosition = const IndicatorPosition.centerToFloat(),
     this.indicatorMode = IndicatorMode.back,
-    required this.controller,
+    this.controller,
     this.tabCornerRadius,
     this.tabBackground,
   });
@@ -61,15 +65,18 @@ class _TabNavigationBarState extends State<TabNavigationBar>
   @override
   void initState() {
     super.initState();
-    controller = widget.controller
+    controller = (widget.controller ?? TabNavigationController())
       .._init(
+        pageController: widget.pageController,
+        animation: widget.pageController != null
+            ? null
+            : AnimationController(
+                vsync: this,
+                duration: widget.animationDuration,
+              ),
         items: widget.items,
         onChanged: widget.onChanged,
         selectedIndex: widget.initialIndex,
-        animation: AnimationController(
-          vsync: this,
-          duration: widget.animationDuration,
-        ),
         animationDuration: widget.animationDuration,
         notifier: () => setState(() {}),
       );
@@ -77,7 +84,7 @@ class _TabNavigationBarState extends State<TabNavigationBar>
 
   @override
   void dispose() {
-    controller.dispose();
+    if (widget.autoDisposeMode) controller.dispose();
     super.dispose();
   }
 
@@ -100,7 +107,8 @@ class _TabNavigationBarState extends State<TabNavigationBar>
           child: Container(
             margin: mIP._current(mHeight, widget.indicatorHeight),
             child: AnimatedIndicator(
-              controller: controller,
+              controller: controller._pageController,
+              animation: controller._animation,
               currentIndex: controller._selectedIndex,
               previousIndex: controller._previousIndex,
               indicator: widget.indicator,
@@ -131,11 +139,8 @@ class _TabNavigationBarState extends State<TabNavigationBar>
                       final item = widget.items[index];
                       return _TabNavigationButton(
                         item: item,
-                        tabBackground: widget.tabBackground ??
-                            const TabNavigationItemProperty(
-                                primary: Colors.transparent),
-                        tabCornerRadius: widget.tabCornerRadius ??
-                            const TabNavigationItemProperty(primary: 25),
+                        tabBackground: widget.tabBackground,
+                        tabCornerRadius: widget.tabCornerRadius,
                         rippleColor:
                             widget.rippleColor ?? primary.withOpacity(0.1),
                         pressedColor:

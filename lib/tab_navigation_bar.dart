@@ -1,5 +1,7 @@
 library tab_navigation_bar;
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 part 'src/button.dart';

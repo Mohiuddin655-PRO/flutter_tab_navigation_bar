@@ -10,12 +10,12 @@ class BottomIndicatorExample extends StatefulWidget {
 }
 
 class _BottomIndicatorExampleState extends State<BottomIndicatorExample> {
-  late TabNavigationController pageController;
+  late PageController pageController;
 
   @override
   void initState() {
     super.initState();
-    pageController = TabNavigationController();
+    pageController = PageController();
   }
 
   @override
@@ -71,7 +71,7 @@ class _BottomIndicatorExampleState extends State<BottomIndicatorExample> {
         ),
         bottomNavigationBar: TabNavigationBar(
           backgroundColor: Colors.white,
-          controller: pageController,
+          pageController: pageController,
           indicatorMode: IndicatorMode.back,
           indicatorPosition: const IndicatorPosition.centerToFloat(24),
           indicatorWidth: 8,
